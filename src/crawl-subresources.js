@@ -2,6 +2,8 @@ import { whenAllSettled, postcss, documentOuterHTML } from './package.js'
 
 import { extractLinksFromDom, extractLinksFromCss } from './extract-links/index.js'
 
+import { Blob, blobToText, responseToBlob } from './universal'
+
 /**
  * Recursively fetch the subresources of a DOM resource.
  * @param {Object} resource - the resource object representing the DOM with its subresources.
@@ -120,21 +122,9 @@ async function fetchSubresource(url, options) {
     })
     const resource = {
         // If we got a Response, we wait for the content to arrive.
-        blob: typeof resourceOrResponse.blob === 'function'
-            ? await resourceOrResponse.blob()
-            : resourceOrResponse.blob,
+        blob: await responseToBlob(resourceOrResponse),
         // Read the final URL of the resource (after any redirects).
         url: resourceOrResponse.url,
     }
     return resource
-}
-
-async function blobToText(blob) {
-    const text = await new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = () => reject(reader.error)
-        reader.readAsText(blob) // TODO should we know&tell which encoding to use?
-    })
-    return text
 }

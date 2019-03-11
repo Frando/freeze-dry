@@ -28,6 +28,7 @@ export default async function freezeDry(doc = window.document, {
     addMetadata = true,
     keepOriginalAttributes = true,
     fetchResource,
+    blobToURL,
     now = new Date(),
 } = {}) {
     // Step 1: Capture the DOM (as well as DOMs inside frames).
@@ -46,6 +47,7 @@ export default async function freezeDry(doc = window.document, {
     const html = await createSingleFile(resource, {
         addMetadata,
         keepOriginalAttributes,
+        blobToURL,
         snapshotTime: now,
     })
 

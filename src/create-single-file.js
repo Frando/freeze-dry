@@ -1,4 +1,5 @@
-import { blobToDataURL, whenAllSettled } from './package.js'
+import { whenAllSettled } from './package.js'
+import { blobToDataURL } from './universal.js'
 
 import setMementoTags from './set-memento-tags.js'
 import setContentSecurityPolicy from './set-content-security-policy/index.js'
@@ -13,8 +14,9 @@ export default async function createSingleFile(resource, {
     addMetadata,
     keepOriginalAttributes,
     snapshotTime,
+    blobToURL
 } = {}) {
-    await deepInlineSubresources(resource, { keepOriginalAttributes })
+    await deepInlineSubresources(resource, { keepOriginalAttributes, blobToURL })
 
     if (addMetadata) {
         // Add metadata about the snapshot to the snapshot itself.
@@ -44,6 +46,7 @@ export default async function createSingleFile(resource, {
  * @returns nothing; the resource will be mutated.
  */
 async function deepInlineSubresources(resource, options = {}) {
+    const blobToURL = options.blobToURL || blobToDataURL
     await whenAllSettled(
         resource.links.map(async link => {
             if (!link.isSubresource) {
@@ -60,7 +63,7 @@ async function deepInlineSubresources(resource, options = {}) {
             await deepInlineSubresources(link.resource, options)
 
             // Convert the (now self-contained) subresource into a data URL.
-            const dataUrl = await blobToDataURL(link.resource.blob)
+            const dataUrl = await blobToURL(link.resource.blob, link)
 
             setLinkTarget(link, dataUrl, options)
         }),
