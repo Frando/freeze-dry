@@ -66,7 +66,7 @@ async function deepInlineSubresources(resource, options = {}) {
             await deepInlineSubresources(link.resource, options)
 
             // Convert the (now self-contained) subresource into a data URL.
-            const dataUrl = await blobToURL(link.resource.blob, resource)
+            const dataUrl = await blobToURL(link.resource.blob, link, resource)
 
             setLinkTarget(link, dataUrl, options)
         }),
