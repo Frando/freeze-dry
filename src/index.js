@@ -29,6 +29,7 @@ export default async function freezeDry(doc = window.document, {
     keepOriginalAttributes = true,
     fetchResource,
     blobToURL,
+    getCsp,
     now = new Date(),
 } = {}) {
     // Step 1: Capture the DOM (as well as DOMs inside frames).
@@ -48,6 +49,7 @@ export default async function freezeDry(doc = window.document, {
         addMetadata,
         keepOriginalAttributes,
         blobToURL,
+        getCsp,
         snapshotTime: now,
     })
 
